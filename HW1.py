@@ -81,48 +81,30 @@ class Perceptron(object):
         return labels_pred
 
 
-""" MAIN FUNCTION 
-  1. Read data
-"""
-# categories = ['alt.atheism', 'talk.religion.misc',   'comp.graphics']
-# newsgroups_train = fetch_20newsgroups(subset='train', categories=categories)
+""" MAIN FUNCTION """
+""" 1. Read data """
 newsgroups_train = fetch_20newsgroups(subset='train')
-## test data: newsgroups_test.data + newsgroups_test.target
 
-""" 2. Converting text to vectors 
- One first need to turn the text into vectors of numerical values suitable for statistical analysis. This can be achieved with the utilities
-of the sklearn.feature_extraction.text as demonstrated in the following example that extract TF-IDF vectors of unigram tokens from a subset of 20news: 
-"""
+""" 2. Converting text to vectors """
 vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words='english')
 features = vectorizer.fit_transform(newsgroups_train.data)
 
 
-### 3. Training using the Perceptron Algorithm
+""" 3. Training using the Perceptron Algorithm """
 labels = newsgroups_train.target
-# train subset
-n_train = labels.__len__()
-ind_sub = random.sample(range(labels.__len__()), n_train)
-features_sub = features[ind_sub,:]
-labels_sub = labels[ind_sub]
-
 # train
 P = Perceptron()
-P.train(features_sub, labels_sub)
-train_pred = P.predict(features_sub)
-print( metrics.confusion_matrix(labels_sub, train_pred))
+P.train(features, labels)
+train_pred = P.predict(features)
+print( metrics.confusion_matrix(labels, train_pred))
 
 # predict
 newsgroups_test = fetch_20newsgroups(subset='test')
 test_features = vectorizer.transform(newsgroups_test.data)
 test_labels = newsgroups_test.target
-# test subset
-n_test = 2500   # test_labels.__len__()
-ind_sub = random.sample(range(test_labels.__len__()), n_test)
-test_features_sub = test_features[ind_sub,:]
-test_labels_sub = test_labels[ind_sub]
 
-# pred
-test_pred = P.predict(test_features_sub)
+test_pred = P.predict(test_features)
 
 # measure:
-print( metrics.confusion_matrix(test_labels_sub, test_pred) )
+print( metrics.confusion_matrix(test_labels, test_pred) )
+
